@@ -45,7 +45,8 @@ public class ConnectSix extends JFrame {
 	static public int banNumber=0;
 	static public boolean start=false;
 	static public Point[][] checkDot=  new Point [19][19];
-	static public int[][] check=  new int [19][19]; 
+	static public int[][] check=  new int [19][19];
+	static public int[][] weight = new int[19][19];
 	static public int count=0, pointX, pointY;
 	static public Point prev, dot;
 	static JTextField inputX, inputY;
@@ -71,6 +72,7 @@ public class ConnectSix extends JFrame {
         for(int i=0; i<19; i++) { 
         	for(int j=0; j<19; j++) {
         		ConnectSix.check[i][j] =-1 ;
+        		weight[i][j] = 0;
         	}
         }
     	draw = new DrawLine();
@@ -120,6 +122,7 @@ public class ConnectSix extends JFrame {
        	        for(int i=0; i<19; i++) {
        	        	for(int j=0; j<19; j++) {
        	        		ConnectSix.check[i][j] =-1 ;
+       	        		weight[i][j] = 0;
        	        	}
        	        }
        		 	draw.repaint();
@@ -169,8 +172,8 @@ public class ConnectSix extends JFrame {
 				System.out.println(dot.x  + " " + dot.y);
 				draw.validate();
 				draw.repaint();
-				inputX.setText("");
-				inputY.setText("");
+//				inputX.setText("");
+//				inputY.setText("");
 			}
     	});
     	containerPanel.add(put);
