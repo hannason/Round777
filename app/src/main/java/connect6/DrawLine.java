@@ -88,7 +88,7 @@ public class DrawLine extends JPanel {
 	        			}
 	        		}
 	        	}
-            	
+            	 
      
         	}else if(ConnectSix.banNumber<=0 && ConnectSix.press) {
         		if(!ConnectSix.start) {

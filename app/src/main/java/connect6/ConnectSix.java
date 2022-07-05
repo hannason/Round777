@@ -96,7 +96,7 @@ public class ConnectSix extends JFrame {
             }
         });
     	containerPanel.add(banbtn);
-    	
+    	 
     	JButton startbtn = new JButton("게임 시작");
     	startbtn.setBounds(900,120,100,50);
     	startbtn.addActionListener(new ActionListener() {
