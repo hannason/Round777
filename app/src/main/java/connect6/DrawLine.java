@@ -32,6 +32,7 @@ public class DrawLine extends JPanel {
 	JFrame end;
 	JLabel black;
 	JLabel white;
+	
 	@Override
     public void paintComponent(Graphics var){
 
