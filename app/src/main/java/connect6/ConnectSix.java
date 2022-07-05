@@ -1,24 +1,24 @@
 package connect6;
 /*
- 1) 일반 바둑판 사용 (19x19)
+ 1) �씪諛� 諛붾몣�뙋 �궗�슜 (19x19)
 
-2) 팀별 프로그램 설치된 컴퓨터 1대와 선수 1명 출전
+2) ��蹂� �봽濡쒓렇�옩 �꽕移섎맂 而댄벂�꽣 1���� �꽑�닔 1紐� 異쒖쟾
 
-3) 게임의 다양성을 높이기 위해 심판이 0~5개의 착수금지점을 임의로 배치
+3) 寃뚯엫�쓽 �떎�뼇�꽦�쓣 �넂�씠湲� �쐞�빐 �떖�뙋�씠 0~5媛쒖쓽 李⑹닔湲덉��젏�쓣 �엫�쓽濡� 諛곗튂
 
-4) 흑백이 교대로 한번에 2개씩 바둑돌을 놓는데 흑은 첫수에 돌 하나만 정중앙에 착수
+4) �쓳諛깆씠 援먮�濡� �븳踰덉뿉 2媛쒖뵫 諛붾몣�룎�쓣 �넃�뒗�뜲 �쓳�� 泥レ닔�뿉 �룎 �븯�굹留� �젙以묒븰�뿉 李⑹닔
 
-5) 상대팀의 2수를 자신의 팀 프로그램에 입력
+5) �긽�����쓽 2�닔瑜� �옄�떊�쓽 �� �봽濡쒓렇�옩�뿉 �엯�젰
 
-6) 팀 프로그램이 제시한 2수를 그대로 바둑판에 착수
+6) �� �봽濡쒓렇�옩�씠 �젣�떆�븳 2�닔瑜� 洹몃�濡� 諛붾몣�뙋�뿉 李⑹닔
 
-    (착수 금지점에 착수한 돌은 무시) (30초 제한)
+    (李⑹닔 湲덉��젏�뿉 李⑹닔�븳 �룎�� 臾댁떆) (30珥� �젣�븳)
 
-7) 6개 이상의 돌이 같은색으로 일렬로 만드는 팀이 승리
+7) 6媛� �씠�긽�쓽 �룎�씠 媛숈��깋�쑝濡� �씪�젹濡� 留뚮뱶�뒗 ���씠 �듅由�
 
-8) 3x3과 같은 특별한 금지 없음
+8) 3x3怨� 媛숈� �듅蹂꾪븳 湲덉� �뾾�쓬
 
-9) 흑백은 경기직전 결정 
+9) �쓳諛깆� 寃쎄린吏곸쟾 寃곗젙 
  */
 
 import java.awt.*;
@@ -37,19 +37,21 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-
-
 public class ConnectSix extends JFrame {
 	static public JPanel connectSixPanel;
 	static public DrawLine draw;
 	static public boolean ban=false;
+	static boolean press=false;
 	static public int banNumber=0;
 	static public boolean start=false;
 	static public Point[][] checkDot=  new Point [19][19];
-	static public int[][] check=  new int [19][19]; //-1 : 선택되지 않은 곳/ 0 : band된 곳/ 1:흑돌/2:백돌 
-	static public int count=0;
-	static public Point prev;
-	//static public JLabel alert;
+	static public int[][] check=  new int [19][19];
+	static public int[][] weight = new int[19][19];
+	static public int count=0, pointX, pointY;
+	static public Point prev, dot;
+	static JTextField inputX, inputY;
+	JLabel lbX, lbY;
+	
 	ConnectSix(){
 		setTitle("connectSix");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -66,12 +68,11 @@ public class ConnectSix extends JFrame {
     	connectSixPanel = new JPanel();
     	connectSixPanel.setBounds(50,50,800,800);
     	connectSixPanel.setBackground(Color.YELLOW);
-    	//GetMousePreRelXY prerelxy = new GetMousePreRelXY();
-    	//connectSixPanel.addMouseListener(prerelxy);
-    	//교차점 초기화 
-        for(int i=0; i<19; i++) {//행 
-        	for(int j=0; j<19; j++) { //열 
+  
+        for(int i=0; i<19; i++) { 
+        	for(int j=0; j<19; j++) {
         		ConnectSix.check[i][j] =-1 ;
+        		weight[i][j] = 0;
         	}
         }
     	draw = new DrawLine();
@@ -83,7 +84,7 @@ public class ConnectSix extends JFrame {
     	bandN.setBounds(850,50,50,50);
     	containerPanel.add(bandN);
     	
-    	JButton banbtn = new JButton("착수 금지돌 설정 ");
+    	JButton banbtn = new JButton("착수 금지돌 설정");
     	banbtn.setBounds(900,50,100,50);
     	banbtn.addActionListener(new ActionListener() {
        	 @Override
@@ -95,13 +96,13 @@ public class ConnectSix extends JFrame {
             }
         });
     	containerPanel.add(banbtn);
-    	
+    	 
     	JButton startbtn = new JButton("게임 시작");
     	startbtn.setBounds(900,120,100,50);
     	startbtn.addActionListener(new ActionListener() {
        	 @Override
             public void actionPerformed(ActionEvent e) {
-       		 	ban=false;//게임 시작 후 이제 착수 금지 돌 설정 안됨 
+       		 	ban=false;
        		 	count=1;
        		 	start=true;
        		 	draw.repaint();
@@ -109,7 +110,7 @@ public class ConnectSix extends JFrame {
         });
     	containerPanel.add(startbtn);
     	
-    	JButton resetbtn = new JButton("새로 고침");
+    	JButton resetbtn = new JButton("새로고침");
     	resetbtn.setBounds(900,180,100,50);
     	resetbtn.addActionListener(new ActionListener() {
        	 @Override
@@ -117,10 +118,11 @@ public class ConnectSix extends JFrame {
        		 	ban=false; 
        		 	count=1;
        		 	start=false;
-       		 	//교차점 초기화 
-       	        for(int i=0; i<19; i++) {//행 
-       	        	for(int j=0; j<19; j++) { //열 
+       		 	
+       	        for(int i=0; i<19; i++) {
+       	        	for(int j=0; j<19; j++) {
        	        		ConnectSix.check[i][j] =-1 ;
+       	        		weight[i][j] = 0;
        	        	}
        	        }
        		 	draw.repaint();
@@ -143,6 +145,38 @@ public class ConnectSix extends JFrame {
         });
     	containerPanel.add(backbtn);
     	
+    	lbX = new JLabel("X");
+    	lbX.setBounds(920, 310, 40, 40);
+    	containerPanel.add(lbX);
+    	inputX = new JTextField();
+    	inputX.setBounds(905, 350, 40, 40);
+    	containerPanel.add(inputX);
+    	lbY = new JLabel("Y");
+    	lbY.setBounds(965, 310, 40, 40);
+    	containerPanel.add(lbY);
+    	inputY = new JTextField();
+    	inputY.setBounds(950, 350, 40, 40);
+    	containerPanel.add(inputY);
+    	
+    	JButton put = new JButton("적용");
+    	put.setBounds(900, 400, 100, 40);
+    	put.setBackground(Color.WHITE);
+    	put.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				press=true;
+				pointX = Integer.parseInt(inputX.getText());
+				pointY = Integer.parseInt(inputY.getText());
+				dot = checkDot[pointX][pointY];
+				System.out.println("pointX : " + pointX + " pointY : " + pointY);
+				System.out.println(dot.x  + " " + dot.y);
+				draw.validate();
+				draw.repaint();
+//				inputX.setText("");
+//				inputY.setText("");
+			}
+    	});
+    	containerPanel.add(put);
     	
     	containerPanel.add(connectSixPanel);
 		add(containerPanel);
