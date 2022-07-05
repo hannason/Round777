@@ -29,6 +29,7 @@ public class DrawLine extends JPanel {
 	private boolean press=false;
 	private int startX,startY; //X,Y
 	private int checkOK;
+	private Point []nextStone=new Point[2];
 	JFrame end;
 	JLabel black;
 	JLabel white;
@@ -123,7 +124,12 @@ public class DrawLine extends JPanel {
 		        				ConnectSix.check[i][j]=1;
 		        				ConnectSix.count++;
 		        				ConnectSix.prev=new Point(i,j);
-		        				
+		        				ConnectSix.blackList.add(new Point(i,j));
+		        				//4이상 판별 
+		        				//checkOverFour();
+		        				//4이상 판별한 위치가 돌이 없으면 nextstone으로 간주.
+		        				//있으면 가중치 체크해서 stone결정 
+		        				//
 		        				//흑 승리 판별  
 		                		if(ConnectSix.check[i][j]==1) {
 		                			if(winloseVertical(i,j, 1,1)>=6 || winloseHorizantal(i,j, 1,1)>=6 || winlosePlusSlop(i,j,1,1)>=6 ||winloseMinusSlop(i,j,1,1)>=6) {
@@ -148,7 +154,7 @@ public class DrawLine extends JPanel {
 		        			if(ConnectSix.check[i][j]<0 && Math.abs(ConnectSix.checkDot[i][j].x -startX)<15 && Math.abs(ConnectSix.checkDot[i][j].y -startY)<15 ) {
 		        				ConnectSix.check[i][j]=2;
 		        				ConnectSix.count++;
-		        				
+		        				ConnectSix.whiteList.add(new Point(i,j));
 		        				ConnectSix.prev=new Point(i,j);
 		        				//백 승리 판별 
 		                		if(ConnectSix.check[i][j]==2) {
@@ -253,29 +259,80 @@ public class DrawLine extends JPanel {
         press=false;
     }
 	
+//	private void checkOverFour() {
+//		// TODO Auto-generated method stub
+//		for(int i=0;i<19;i++) {
+//			for(int j=0; j<19; j++) {
+//				//4이상이면 
+//				if(winloseVertical(i,j, 1,1)>=4) {
+//					
+//				}
+//				if(winloseHorizantal(i,j, 1,1)>=4) {
+//					
+//				}
+//				if(winlosePlusSlop(i,j,1,1)>=4) {
+//					
+//				}
+//				if(winloseMinusSlop(i,j,1,1)>=4) {
+//					
+//				}
+//			}
+//		}	
+//	}
+
 	public int winloseHorizantal(int row, int column, int count, int color) {
-		
 		int right=winloseRight(row,column, 0,color,1);
 		int left=winloseRight(row, column,0,color,-1);
+		
+		if(right+left+1>=4) {
+			Point temp = new Point(row+right+1, column);
+			nextStone[0]=temp;
+			temp = new Point(row-left-1, column);
+			nextStone[1]=temp;
+			System.out.println("first "+nextStone[0]+"  second  "+nextStone[1]);
+		}
 		return right+left+1;
 	}
 	public int winloseVertical(int row, int column, int count, int color) {
 		
 		int right=winloseDown(row,column, 0,color,1);
 		int left=winloseDown(row, column,0,color,-1);
-
+		if(right+left+1>=4) {
+			Point temp = new Point(row, column+right+1);
+			nextStone[0]=temp;
+			temp = new Point(row, column-left-1);
+			nextStone[1]=temp;
+			System.out.println("first "+nextStone[0]+"  second  "+nextStone[1]);
+		}
 		return right+left+1;
 	}
 	public int winlosePlusSlop(int row, int column, int count, int color) {
 		
 		int right=winloseAntiCross(row,column, 0,color,1);
 		int left=winloseAntiCross(row, column,0,color,-1);
+		System.out.println("right "+right+" left "+left);
+		if(right+left+1>=4) {
+			
+			Point temp = new Point(row+right+1, column-right-1);
+			nextStone[0]=temp;
+			temp = new Point(row+left+1, column-left-1);
+			nextStone[1]=temp;
+			System.out.println("first "+nextStone[0]+"  second  "+nextStone[1]);
+		}
 		return right+left+1;
 	}
 	public int winloseMinusSlop(int row, int column, int count, int color) {
 		
 		int right=winloseCross(row,column, 0,color,1);
 		int left=winloseCross(row, column,0,color,-1);
+		
+		if(right+left+1>=4) {
+			Point temp = new Point(row+right+1, column+right+1);
+			nextStone[0]=temp;
+			temp = new Point(row-left-1, column-left-1);
+			nextStone[1]=temp;
+			System.out.println("first "+nextStone[0]+"  second  "+nextStone[1]);
+		}
 		return right+left+1;
 	}
 	public int winloseRight(int row, int column, int count, int color,int rightleft) {
@@ -329,7 +386,7 @@ public class DrawLine extends JPanel {
 
 	    	if(ConnectSix.check[row+rightleft][column-rightleft]==color) {
 	    		count++;
-	    		return winloseAntiCross(row, column+rightleft,count,  color, rightleft);
+	    		return winloseAntiCross(row+rightleft, column-rightleft,count,  color, rightleft);
 	    	}
 	    	else {
 	    		return count;

@@ -49,6 +49,10 @@ public class ConnectSix extends JFrame {
 	static public int[][] check=  new int [19][19]; //-1 : 선택되지 않은 곳/ 0 : band된 곳/ 1:흑돌/2:백돌 
 	static public int count=0;
 	static public Point prev;
+	static public int[][] weight=  new int [19][19];
+	
+	static public ArrayList <Point> blackList=new ArrayList <Point>();
+	static public ArrayList <Point> whiteList=new ArrayList <Point>();
 	//static public JLabel alert;
 	ConnectSix(){
 		setTitle("connectSix");
