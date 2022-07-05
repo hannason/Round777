@@ -27,7 +27,6 @@ public class DrawLine extends JPanel {
 	//private GetMousePreRelXY prerelxy;
 	public int win =0;
 	private int startX,startY; //X,Y
-	private int checkOK;
 	JFrame end;
 	JLabel black;
 	JLabel white;
@@ -240,6 +239,7 @@ public class DrawLine extends JPanel {
 		int left=winloseCross(row, column,0,color,-1);
 		return right+left+1;
 	}
+	
 	public int winloseRight(int row, int column, int count, int color,int rightleft) {
 		try {
 
