@@ -34,10 +34,19 @@ public class DrawLine extends JPanel {
 	JLabel white;
 	int[][] clone = new int[19][19];
 	Stack<Point> compareAdjPointS = new Stack<Point>();
+	Stack<Point> compareSuccPointS = new Stack<Point>();
+	static Point[] select = new Point[2];
+	static Stack<Point> myPoint = new Stack<Point>();
 	
 	@Override
     public void paintComponent(Graphics var){
-
+		if(ConnectSix.player == 1)
+		{
+	 		myPoint = ConnectSix.blackS;
+		}
+		if(ConnectSix.player == 2) {
+			myPoint = ConnectSix.whiteS;
+		}
         super.paintComponent(var);
         Graphics2D var2d = (Graphics2D) var;
         this.setBackground(new Color(220, 179, 92));
@@ -347,9 +356,55 @@ public class DrawLine extends JPanel {
 		//큐 a: 이웃점의 비교/ 큐 b: 시뮬레이션을 위한 큐/  큐 c: 연속된 점의 비교 
 		//1 블랙리스트 각각 점 ->포인트 함수->큐a에 넣어준다.
 		ArrayList<Point> ary = new ArrayList<>();
-		for(int i=0; i<ConnectSix.blackS.size(); i++)
+		
+
+		//for 문 (빈칸 2개를 위한 for문  , 00xx00) 
+				//2 큐a의 첫번째 포인트와  이 포인트를 포인트 함수에 넣어서 큐c를 만든다.
+				//3 큐a의 포인트와 큐c의 첫번째 포인트와 묶음을 만든다 .
+				
+				//4 임의의 큐b를 만든다.(시뮬레이션을 위한…blacklist에서 3번의 점을 넣어서 만든 큐b)
+				
+				//4 임의의 큐b를 통헤 승리 조건을 판별한다.
+
+				//5 만약 승리 조건이면 for문을 멈추고 묶음을 반환한다. 또는 어떠한 변수에 저장한다. 
+		for(int i=0; i<compareAdjPointS.size(); i++)
 		{
-			ary = getPointAry(ConnectSix.blackS.elementAt(i).x, ConnectSix.blackS.elementAt(i).y);
+			ary = new ArrayList<>();
+			
+			for(int a=0; a<myPoint.size(); a++)
+			{
+				ary = getPointAry(compareAdjPointS.elementAt(a).x, compareAdjPointS.elementAt(a).y);
+				for(int j=0; j<ary.size(); j++)
+				{
+					compareSuccPointS.add(ary.get(j));
+				}
+			}
+			for(int j=0; j<compareSuccPointS.size(); j++)
+			{
+				myPoint.add(compareAdjPointS.elementAt(i));
+				myPoint.add(compareSuccPointS.elementAt(j));
+				ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = ConnectSix.player;
+				ConnectSix.check[compareSuccPointS.elementAt(j).x][compareSuccPointS.elementAt(j).y] = ConnectSix.player;
+				for(int l=0; l<myPoint.size(); l++)
+				{
+					if(winloseVertical(myPoint.elementAt(l).x,myPoint.elementAt(l).y, 1,1)>=6 || winloseHorizantal(myPoint.elementAt(l).x,myPoint.elementAt(l).y, 1,1)>=6 || winlosePlusSlop(myPoint.elementAt(l).x,myPoint.elementAt(l).y,1,1)>=6 ||winloseMinusSlop(myPoint.elementAt(l).x,myPoint.elementAt(l).y,1,1)>=6){
+	    				select[0] = new Point(compareAdjPointS.elementAt(i).x, compareAdjPointS.elementAt(i).y);
+	    				//select[1] = new Point(compareAdjPointS.elementAt(j).x, compareAdjPointS.elementAt(j).y);
+	    			}
+					
+				}
+				myPoint.pop();
+				myPoint.pop();
+				ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = -1;
+				ConnectSix.check[compareSuccPointS.elementAt(j).x][compareSuccPointS.elementAt(j).y] = -1;
+			}
+		}
+		
+		
+		
+		for(int i=0; i<myPoint.size(); i++)
+		{
+			ary = getPointAry(myPoint.elementAt(i).x, myPoint.elementAt(i).y);
 			for(int j=0; j<ary.size(); j++)
 			{
 				compareAdjPointS.add(ary.get(j));
@@ -363,23 +418,28 @@ public class DrawLine extends JPanel {
 			//4 임의의 큐b를 통헤 승리 조건을 판별한다.
 
 			//5 만약 승리 조건이면 for문을 멈추고 묶음을 반환한다. 또는 어떠한 변수에 저장한다. 
-		for(Point p : compareAdjPointS)
+		for(int i=0; i<compareAdjPointS.size(); i++)
 		{
-			for(Point pnt : compareAdjPointS)
+			for(int j=i+1; j<compareAdjPointS.size(); j++)
 			{
-				
+				myPoint.add(compareAdjPointS.elementAt(i));
+				myPoint.add(compareAdjPointS.elementAt(j));
+				ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = ConnectSix.player;
+				ConnectSix.check[compareAdjPointS.elementAt(j).x][compareAdjPointS.elementAt(j).y] = ConnectSix.player;
+				for(int l=0; l<myPoint.size(); l++)
+				{
+					if(winloseVertical(myPoint.elementAt(l).x,myPoint.elementAt(l).y, 1,1)>=6 || winloseHorizantal(myPoint.elementAt(l).x,myPoint.elementAt(l).y, 1,1)>=6 || winlosePlusSlop(myPoint.elementAt(l).x,myPoint.elementAt(l).y,1,1)>=6 ||winloseMinusSlop(myPoint.elementAt(l).x,myPoint.elementAt(l).y,1,1)>=6){
+	    				select[0] = new Point(compareAdjPointS.elementAt(i).x, compareAdjPointS.elementAt(i).y);
+	    				select[1] = new Point(compareAdjPointS.elementAt(j).x, compareAdjPointS.elementAt(j).y);
+	    			}
+				}
+				myPoint.pop();
+				myPoint.pop();
+				ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = -1;
+				ConnectSix.check[compareAdjPointS.elementAt(j).x][compareAdjPointS.elementAt(j).y] = -1;
 			}
 		}
 		
-		//for 문 (빈칸 2개를 위한 for문  , 00xx00) 
-				//2 큐a의 첫번째 포인트와  이 포인트를 포인트 함수에 넣어서 큐c를 만든다.
-				//3 큐a의 포인트와 큐c의 첫번째 포인트와 묶음을 만든다 .
-				
-				//4 임의의 큐b를 만든다.(시뮬레이션을 위한…blacklist에서 3번의 점을 넣어서 만든 큐b)
-				
-				//4 임의의 큐b를 통헤 승리 조건을 판별한다.
-
-				//5 만약 승리 조건이면 for문을 멈추고 묶음을 반환한다. 또는 어떠한 변수에 저장한다. 
 
 	}
 }
