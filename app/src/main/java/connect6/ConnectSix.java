@@ -76,7 +76,6 @@ public class ConnectSix extends JFrame {
         for(int i=0; i<19; i++) { 
         	for(int j=0; j<19; j++) {
         		ConnectSix.check[i][j] =-1 ;
-        		weight[i][j] = 0;
         	}
         }
     	draw = new DrawLine();

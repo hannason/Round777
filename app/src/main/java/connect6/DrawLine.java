@@ -120,8 +120,12 @@ public class DrawLine extends JPanel {
 		        				ConnectSix.count++;
 		        				ConnectSix.prev=new Point(i,j);
 		        				ConnectSix.blackList.add(new Point(i,j));
-		        				//4이상 판별 
-		        				//checkOverFour();
+		        				//우리가 이길 조건이면by 시뮬레이션 
+		        				checkOverWin();
+		        				//상대 방이 이길 조건 
+		        				
+		        				//내가 유리한 조건이면 
+		        				
 		        				//4이상 판별한 위치가 돌이 없으면 nextstone으로 간주.
 		        				//있으면 가중치 체크해서 stone결정 
 		        				//
@@ -222,6 +226,35 @@ public class DrawLine extends JPanel {
         ConnectSix.press=false;
     }
 	
+private void checkOverWin() {
+	// TODO Auto-generated method stub
+	//큐 a: 이웃점의 비교/ 큐 b: 시뮬레이션을 위한 큐/  큐 c: 연속된 점의 비교 
+	//1 블랙리스트 각각 점 ->포인트 함수->큐a에 넣어준다.
+	
+	//for 문 (빈칸 1개를 위한 for문 , 0x0000)
+		//2 큐a의 첫번째 포인트와  큐a의 다른 포인트와 묶음을 만든다.
+		
+		//3 임의의 큐b를 만든다.(시뮬레이션을 위한...blacklist에서 2번의 점을 넣어서 만든 큐b)
+		
+		//4 임의의 큐b를 통헤 승리 조건을 판별한다.
+		/*
+		 
+		 */
+	
+		//5 만약 승리 조건이면 for문을 멈추고 묶음을 반환한다. 또는 어떠한 변수에 저장한다. 
+	
+	
+	//for 문 (빈칸 2개를 위한 for문  , 00xx00) 
+			//2 큐a의 첫번째 포인트와  이 포인트를 포인트 함수에 넣어서 큐c를 만든다.
+			//3 큐a의 포인트와 큐c의 첫번째 포인트와 묶음을 만든다 .
+			
+			//4 임의의 큐b를 만든다.(시뮬레이션을 위한...blacklist에서 3번의 점을 넣어서 만든 큐b)
+			
+			//4 임의의 큐b를 통헤 승리 조건을 판별한다.
+
+			//5 만약 승리 조건이면 for문을 멈추고 묶음을 반환한다. 또는 어떠한 변수에 저장한다. 
+}
+
 //	private void checkOverFour() {
 //		// TODO Auto-generated method stub
 //		for(int i=0;i<19;i++) {
