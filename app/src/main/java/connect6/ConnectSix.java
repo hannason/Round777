@@ -31,8 +31,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Stack;
-
+import java.util.Queue;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -55,6 +56,10 @@ public class ConnectSix extends JFrame {
 	static public Point prev, dot;
 	static JTextField inputX, inputY;
 	JLabel lbX, lbY;
+	static JButton b, w;
+	static int player;
+	static Stack<Point> blackS = new Stack<>();
+	static Stack<Point> whiteS = new Stack<>();
 	
 	ConnectSix(){
 		setTitle("connectSix");
@@ -63,7 +68,6 @@ public class ConnectSix extends JFrame {
 		setSize(1000, 1000);
 		setLocationRelativeTo(null);
         setVisible(true);
-
     }
     
     public void setScreen() {
@@ -84,11 +88,11 @@ public class ConnectSix extends JFrame {
     	
     	
     	JTextField bandN = new JTextField();
-    	bandN.setBounds(850,50,50,50);
+    	bandN.setBounds(850,50,40,40);
     	containerPanel.add(bandN);
     	
     	JButton banbtn = new JButton("착수 금지돌 설정");
-    	banbtn.setBounds(900,50,100,50);
+    	banbtn.setBounds(900,50,130,40);
     	banbtn.addActionListener(new ActionListener() {
        	 @Override
             public void actionPerformed(ActionEvent e) {
@@ -99,7 +103,7 @@ public class ConnectSix extends JFrame {
             }
         });
     	containerPanel.add(banbtn);
-    	 
+    	
     	JButton startbtn = new JButton("게임 시작");
     	startbtn.setBounds(900,120,100,50);
     	startbtn.addActionListener(new ActionListener() {
@@ -108,6 +112,8 @@ public class ConnectSix extends JFrame {
        		 	ban=false;
        		 	count=1;
        		 	start=true;
+       		 	Point p = new Point(9,9);
+    		 	blackS.add(p);
        		 	draw.repaint();
             }
         });
@@ -170,9 +176,15 @@ public class ConnectSix extends JFrame {
 				press=true;
 				pointX = Integer.parseInt(inputX.getText());
 				pointY = Integer.parseInt(inputY.getText());
+				Point po = new Point(pointX, pointY);
 				dot = checkDot[pointX][pointY];
+				if(ConnectSix.count%4==0 || ConnectSix.count%4==1)
+					blackS.add(po);
+				if(ConnectSix.count%4==2 || ConnectSix.count%4==3 )
+					whiteS.add(po);
 				System.out.println("pointX : " + pointX + " pointY : " + pointY);
 				System.out.println(dot.x  + " " + dot.y);
+				System.out.println("blackQ : " + blackS + " whiteQ : " + whiteS); 
 				draw.validate();
 				draw.repaint();
 //				inputX.setText("");
@@ -181,9 +193,42 @@ public class ConnectSix extends JFrame {
     	});
     	containerPanel.add(put);
     	
+    	b = new JButton("흑");
+    	b.setBounds(900, 460, 50, 40);
+    	b.setBackground(Color.BLACK);
+		b.setForeground(Color.WHITE);
+    	b.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				b.setBackground(Color.BLACK);
+				b.setForeground(Color.WHITE);
+				w.setBackground(Color.WHITE);
+				w.setForeground(Color.WHITE);
+				player = 1;
+			}
+    	});
+    	containerPanel.add(b);
+    	
+    	w = new JButton("백");
+    	w.setBounds(950, 460, 50, 40);
+    	w.setBackground(Color.WHITE);
+		w.setForeground(Color.BLACK);
+    	w.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				w.setBackground(Color.WHITE);
+				w.setForeground(Color.BLACK);
+				b.setBackground(Color.BLACK);
+				b.setForeground(Color.BLACK);
+				player = 2;
+			}
+    	});
+    	containerPanel.add(w);
+    	
     	containerPanel.add(connectSixPanel);
 		add(containerPanel);
     }
+    
     
     public static void main(String[] args) {
     	new ConnectSix();

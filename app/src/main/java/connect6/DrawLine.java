@@ -12,6 +12,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Stack;
 import java.nio.file.*;
 import java.util.stream.*;
@@ -27,11 +29,16 @@ public class DrawLine extends JPanel {
 	//private GetMousePreRelXY prerelxy;
 	public int win =0;
 	private int startX,startY; //X,Y
+
 	private int checkOK;
 	private Point []nextStone=new Point[2];
+
 	JFrame end;
 	JLabel black;
 	JLabel white;
+
+	int[][] clone = new int[19][19];
+	Stack<Point> compareAdjPointS = new Stack<Point>();
 	
 	@Override
     public void paintComponent(Graphics var){
@@ -64,7 +71,7 @@ public class DrawLine extends JPanel {
         	for(int j=0; j<19; j++) { //열
         		Point point = new Point(i*740/18+30,j*740/18+30);
         		//var2d.drawOval(i*740/18+30-10, j*740/18+30-10, 20, 20);
-        		ConnectSix.checkDot[i][j] =point ;
+        		ConnectSix.checkDot[i][j] = point ;
         	}
         }
         /////////////////////////////////////////////
@@ -139,8 +146,6 @@ public class DrawLine extends JPanel {
 		        			}
 		        		}
 		        	}
-	            	
-	     
 	        	}
 	        	
 	        	//백
@@ -226,34 +231,6 @@ public class DrawLine extends JPanel {
         ConnectSix.press=false;
     }
 	
-private void checkOverWin() {
-	// TODO Auto-generated method stub
-	//큐 a: 이웃점의 비교/ 큐 b: 시뮬레이션을 위한 큐/  큐 c: 연속된 점의 비교 
-	//1 블랙리스트 각각 점 ->포인트 함수->큐a에 넣어준다.
-	
-	//for 문 (빈칸 1개를 위한 for문 , 0x0000)
-		//2 큐a의 첫번째 포인트와  큐a의 다른 포인트와 묶음을 만든다.
-		
-		//3 임의의 큐b를 만든다.(시뮬레이션을 위한...blacklist에서 2번의 점을 넣어서 만든 큐b)
-		
-		//4 임의의 큐b를 통헤 승리 조건을 판별한다.
-		/*
-		 
-		 */
-	
-		//5 만약 승리 조건이면 for문을 멈추고 묶음을 반환한다. 또는 어떠한 변수에 저장한다. 
-	
-	
-	//for 문 (빈칸 2개를 위한 for문  , 00xx00) 
-			//2 큐a의 첫번째 포인트와  이 포인트를 포인트 함수에 넣어서 큐c를 만든다.
-			//3 큐a의 포인트와 큐c의 첫번째 포인트와 묶음을 만든다 .
-			
-			//4 임의의 큐b를 만든다.(시뮬레이션을 위한...blacklist에서 3번의 점을 넣어서 만든 큐b)
-			
-			//4 임의의 큐b를 통헤 승리 조건을 판별한다.
-
-			//5 만약 승리 조건이면 for문을 멈추고 묶음을 반환한다. 또는 어떠한 변수에 저장한다. 
-}
 
 //	private void checkOverFour() {
 //		// TODO Auto-generated method stub
@@ -331,6 +308,7 @@ private void checkOverWin() {
 		}
 		return right+left+1;
 	}
+	
 	public int winloseRight(int row, int column, int count, int color,int rightleft) {
 		try {
 
@@ -390,5 +368,84 @@ private void checkOverWin() {
 		}catch(RuntimeException e) {
 			return 0;
 		}
+	}
+	
+	public ArrayList<Point> getPointAry(int x, int y)
+    {
+    	ArrayList<Point> nPoint = new ArrayList<Point>();
+    	if(x-1 >= 0 && y-1 >=0 && ConnectSix.check[x-1][y-1] == -1)
+    	{
+    		nPoint.add(new Point(x-1, y-1));
+    	}
+    	if(y-1 >=0 && ConnectSix.check[x][y-1] == -1)
+    	{
+    		nPoint.add(new Point(x, y-1));
+    	}
+    	if(x+1 <19 && y-1 >=0 && ConnectSix.check[x+1][y-1] == -1)
+    	{
+    		nPoint.add(new Point(x+1, y-1));
+    	}
+    	if(x-1 >= 0 && ConnectSix.check[x-1][y] == -1)
+    	{
+    		nPoint.add(new Point(x-1, y));
+    	}
+    	if(x+1 < 19 && ConnectSix.check[x+1][y] == -1)
+    	{
+    		nPoint.add(new Point(x+1, y));
+    	}
+    	if(x-1 >= 0 && y+1 < 19 && ConnectSix.check[x-1][y+1] == -1)
+    	{
+    		nPoint.add(new Point(x-1, y+1));
+    	}
+    	if( y+1 >= 0 && ConnectSix.check[x][y+1] == -1)
+    	{
+    		nPoint.add(new Point(x, y+1));
+    	}
+    	if(x+1 < 19 && y+1 < 19 && ConnectSix.check[x+1][y+1] == -1)
+    	{
+    		nPoint.add(new Point(x+1, y+1));
+    	}
+    	return nPoint;
+    }
+	
+	public void checkOverWin()
+	{
+		//큐 a: 이웃점의 비교/ 큐 b: 시뮬레이션을 위한 큐/  큐 c: 연속된 점의 비교 
+		//1 블랙리스트 각각 점 ->포인트 함수->큐a에 넣어준다.
+		ArrayList<Point> ary = new ArrayList<>();
+		for(int i=0; i<ConnectSix.blackS.size(); i++)
+		{
+			ary = getPointAry(ConnectSix.blackS.elementAt(i).x, ConnectSix.blackS.elementAt(i).y);
+			for(int j=0; j<ary.size(); j++)
+			{
+				compareAdjPointS.add(ary.get(j));
+			}
+		}
+		//for 문 (빈칸 1개를 위한 for문 , 0x0000)
+			//2 큐a의 첫번째 포인트와  큐a의 다른 포인트와 묶음을 만든다.
+			
+			//3 임의의 큐b를 만든다.(시뮬레이션을 위한...blacklist에서 2번의 점을 넣어서 만든 큐b)
+			
+			//4 임의의 큐b를 통헤 승리 조건을 판별한다.
+
+			//5 만약 승리 조건이면 for문을 멈추고 묶음을 반환한다. 또는 어떠한 변수에 저장한다. 
+		for(Point p : compareAdjPointS)
+		{
+			for(Point pnt : compareAdjPointS)
+			{
+				
+			}
+		}
+		
+		//for 문 (빈칸 2개를 위한 for문  , 00xx00) 
+				//2 큐a의 첫번째 포인트와  이 포인트를 포인트 함수에 넣어서 큐c를 만든다.
+				//3 큐a의 포인트와 큐c의 첫번째 포인트와 묶음을 만든다 .
+				
+				//4 임의의 큐b를 만든다.(시뮬레이션을 위한…blacklist에서 3번의 점을 넣어서 만든 큐b)
+				
+				//4 임의의 큐b를 통헤 승리 조건을 판별한다.
+
+				//5 만약 승리 조건이면 for문을 멈추고 묶음을 반환한다. 또는 어떠한 변수에 저장한다. 
+
 	}
 }
