@@ -164,6 +164,7 @@ public class ConnectSix extends JFrame {
     	//나의 색깔 정하기 버튼 
     	JButton ImBlack = new JButton("흑");
     	JButton ImWhite = new JButton("백");
+    	
     	ImBlack.setBounds(900, 500, 50, 40);
     	ImBlack.setBackground(Color.BLACK);
     	ImBlack.setForeground(Color.WHITE);
