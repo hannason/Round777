@@ -96,6 +96,7 @@ public class ConnectSix extends JFrame {
     	
     	JButton banbtn = new JButton("착수 금지돌 설정");
     	banbtn.setBounds(900,50,130,40);
+    	banbtn.setBackground(Color.WHITE);
     	banbtn.addActionListener(new ActionListener() {
        	 @Override
             public void actionPerformed(ActionEvent e) {
@@ -110,6 +111,7 @@ public class ConnectSix extends JFrame {
     	//새로고침 버튼 
     	JButton resetbtn = new JButton("새로고침");
     	resetbtn.setBounds(900,180,100,50);
+    	resetbtn.setBackground(Color.WHITE);
     	resetbtn.addActionListener(new ActionListener() {
        	 @Override
             public void actionPerformed(ActionEvent e) {
@@ -127,6 +129,7 @@ public class ConnectSix extends JFrame {
     	//한수 무르기 버튼 
     	JButton backbtn = new JButton("한수 무르기");/////////이거 잠깐 안됨 수정해라ㅏㅏ
     	backbtn.setBounds(900,240,100,50);
+    	backbtn.setBackground(Color.WHITE);
     	backbtn.addActionListener(new ActionListener() {
        	 @Override
             public void actionPerformed(ActionEvent e) {
@@ -164,6 +167,7 @@ public class ConnectSix extends JFrame {
     	//나의 색깔 정하기 버튼 
     	JButton ImBlack = new JButton("흑");
     	JButton ImWhite = new JButton("백");
+    	
     	ImBlack.setBounds(900, 500, 50, 40);
     	ImBlack.setBackground(Color.BLACK);
     	ImBlack.setForeground(Color.WHITE);
@@ -201,6 +205,7 @@ public class ConnectSix extends JFrame {
     	//게임 시작 버튼 
     	JButton startbtn = new JButton("게임 시작");
     	startbtn.setBounds(900,120,100,50);
+    	startbtn.setBackground(Color.WHITE);
     	startbtn.addActionListener(new ActionListener() {
        	 @Override
             public void actionPerformed(ActionEvent e) {
@@ -246,7 +251,10 @@ public class ConnectSix extends JFrame {
 //					blackS.add(new Point(pointX, pointY));
 //				if(ConnectSix.count%4==2 || ConnectSix.count%4==3 )
 //					whiteS.add(new Point(pointX, pointY));
-
+				inputX1.setText("");
+				inputY1.setText("");
+				inputX2.setText("");
+				inputY2.setText("");
 				draw.validate();
 				draw.repaint();
 			}
