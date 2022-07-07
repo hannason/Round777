@@ -33,8 +33,8 @@ public class DrawLine extends JPanel {
    private Point []nextStone=new Point[2];
 
    int[][] clone = new int[19][19];
-   Stack<Point> compareAdjPointS = new Stack<Point>();//육목이 될 연속되지 않은 빈 공간 체크 
-   Stack<Point> compareSuccPointS = new Stack<Point>(); //육목이 될 연속된 빈 공간 체크 
+   
+   
    static Point[] select = new Point[2]; //시뮬레이션 결과 선택된 돌의 위치 포인트
    int flag = 1;
    
@@ -76,22 +76,21 @@ public class DrawLine extends JPanel {
         
         //게임 시작 
         if(ConnectSix.start) {//beforeEdit();
-//           ConnectSix.rivalPoint.add(new Point(8,7));
-//           ConnectSix.check[8][7]=ConnectSix.RivalColor;
-//           ConnectSix.rivalPoint.add(new Point(9,7));
-//           ConnectSix.check[9][7]=ConnectSix.RivalColor;
-//           ConnectSix.rivalPoint.add(new Point(10,7));
-//           ConnectSix.check[10][7]=ConnectSix.RivalColor;
-//           ConnectSix.rivalPoint.add(new Point(11,7));
-//           ConnectSix.check[11][7]=ConnectSix.RivalColor;
-//           ConnectSix.rivalPoint.add(new Point(12,7));
-//           ConnectSix.check[12][7]=ConnectSix.RivalColor;
-//          ConnectSix.check[11][9]=ConnectSix.MyColor;
-//          ConnectSix.myPoint.add(new Point(13,9));
-//          ConnectSix.check[13][9]=ConnectSix.MyColor;
+
            System.out.println("1 : check[0][0]"+ConnectSix.check[0][0]);
            //이미 선택된 돌이 아니면 두 돌을  적절한 스택에 넣어주는 작업 
            try {
+        	   System.out.println("//////////////////////////"+ConnectSix.myPoint.size());
+        	  
+        	   for(int i=0; i<19;i++) {
+       			for(int j=0; j<19; j++) {
+       				if(ConnectSix.check[j][i]==-1)
+       					System.out.print("* ");
+       				else 
+       					System.out.print(ConnectSix.check[j][i]+" ");
+       			}
+       			System.out.println("");
+       		}
               if(ConnectSix.check[ConnectSix.pointX1][ConnectSix.pointY1]<0) {
                  ConnectSix.check[ConnectSix.pointX1][ConnectSix.pointY1]=ConnectSix.RivalColor;//판 그리기를 위한 할당 
                  ConnectSix.rivalPoint.add(new Point(ConnectSix.pointX1,ConnectSix.pointY1));//상대 돌집합을 위한 할당 
@@ -104,18 +103,24 @@ public class DrawLine extends JPanel {
                  ConnectSix.count++;
                  System.out.println("3 : check[0][0]"+ConnectSix.check[ConnectSix.pointX2][ConnectSix.pointY2]);
               }
+	            //유리한 조건의 돌은 무엇인가?
+	              checkBest();
+	            //내가 질 상황인가?
+	              checkOverLose(); //
+	            //내가 이길 상황인가?
+	              checkOverWin(); //good!
+	             ConnectSix.myPoint.add(select[0]);
+	             ConnectSix.myPoint.add(select[1]);
+	             ConnectSix.check[select[0].x][select[0].y] = ConnectSix.MyColor;
+		         ConnectSix.check[select[1].x][select[1].y] = ConnectSix.MyColor;
+	             
            }catch(RuntimeException e) {
               
            }
            
            
            
-           //유리한 조건의 돌은 무엇인가?
-           checkBest();
-         //내가 질 상황인가?
-           checkOverLose(); //
-         //내가 이길 상황인가?
-           checkOverWin(); //good!
+      
         }
        
         //그리기 
@@ -130,19 +135,31 @@ public class DrawLine extends JPanel {
 		// TODO Auto-generated method stub
 		 //시뮬레이션 결과 나의 돌의 집합이 3개가 될 수 있는가? 
 		//시뮬 결과 3개가 된다면, 3개를 만들고 끝점에서 -1이 아닌 다른 점을 만나기 전까지의 합이 적어도 3보다 커야함 
+	  
 		checkNumCapa(3);
-		System.out.println("after cpap3 : "+ConnectSix.rivalPoint.peek());
-	
+		System.out.println("after cpap3 : "+ConnectSix.pointX1+"  "+ConnectSix.check[ConnectSix.pointX1][ConnectSix.pointY1]);
+		System.out.println("after cpap3 : "+ConnectSix.pointX2+"  "+ConnectSix.check[ConnectSix.pointX2][ConnectSix.pointY2]);
+		for(int i=0; i<19;i++) {
+			for(int j=0; j<19; j++) {
+				if(ConnectSix.check[j][i]==-1)
+					System.out.print("* ");
+				else 
+					System.out.print(ConnectSix.check[j][i]+" ");
+			}
+			System.out.println("");
+		}
 		//시뮬레이션 결과 나의 돌의 집합이 4개가 될 수 있는가? 
 		//시뮬 결과 4개가 된다면, 4개를 만들고 끝점에서 -1이 아닌 다른 점을  만나기 전까지의 합이 적어도 2보다 커야 함 
 		checkNumCapa(4);
-		System.out.println("after cpap4 : "+ConnectSix.rivalPoint.peek());
+		//System.out.println("after cpap4 : "+ConnectSix.pointX1+"  "+ConnectSix.check[ConnectSix.pointX1][ConnectSix.pointY1]);
+		//System.out.println("after cpap4 : "+ConnectSix.pointX2+"  "+ConnectSix.check[ConnectSix.pointX2][ConnectSix.pointY2]);
 		
 		
 		//시뮬레이션 결과 나의 돌의 집합이 5개가 될 수 있는가?
 		//시뮬 결과 5개가 된다면, 5개를 만들고 끝점에서 -1이 아닌 다른 점을  만나기 전까지의 합이 적어도 1보다 커야 함 
 		checkNumCapa(5);
-		System.out.println("after cpap5 : "+ConnectSix.rivalPoint.peek());
+		//System.out.println("after cpap5 : "+ConnectSix.pointX1+"  "+ConnectSix.check[ConnectSix.pointX1][ConnectSix.pointY1]);
+		//System.out.println("after cpap5 : "+ConnectSix.pointX2+"  "+ConnectSix.check[ConnectSix.pointX2][ConnectSix.pointY2]);
 	}
 
 	private void checkNumCapa(int succ) {
@@ -150,18 +167,20 @@ public class DrawLine extends JPanel {
 		//1 블랙리스트 각각 점 ->포인트 함수->큐a에 넣어준다.
 		System.out.println("checkNumCapa"+succ);
 	      ArrayList<Point> NeighborAry = new ArrayList<>();
+	      Stack<Point> compareAdjPointS = new Stack<Point>();//육목이 될 연속되지 않은 빈 공간 체크 
+	      Stack<Point> compareSuccPointS = new Stack<Point>(); //육목이 될 연속된 빈 공간 체크 
 	      for(int i=0; i<ConnectSix.myPoint.size(); i++)
 	      {
 	         //나의 점의 이웃들을 모두 저장한다. 
 	         NeighborAry = getPointAry(ConnectSix.myPoint.elementAt(i).x, ConnectSix.myPoint.elementAt(i).y);
-	         
+	         compareAdjPointS = new Stack<Point>();
 	         //NeighborAry의 모든 점들을 인접점 비교 스택에 넣어준다. 
 	         for(int j=0; j<NeighborAry.size(); j++)
 	         {
 	            compareAdjPointS.add(NeighborAry.get(j));
 	         }
 	      }
-	   
+	      System.out.println("compareAdjPointS : "+ compareAdjPointS);
 	      //for 문 (빈칸 2개를 위한 for문  , 00xx00) 
 	            //2 큐a의 첫번째 포인트와  이 포인트를 포인트 함수에 넣어서 큐c를 만든다.
 	            //3 큐a의 포인트와 큐c의 첫번째 포인트와 묶음을 만든다 .
@@ -177,13 +196,14 @@ public class DrawLine extends JPanel {
 	         
 	         //인접한 점 각각의 이웃점 집합 만들기 
 	         NeighborAry = getPointAry(compareAdjPointS.elementAt(i).x, compareAdjPointS.elementAt(i).y);
-
+	         compareSuccPointS = new Stack<Point>(); //육목이 될 연속된 빈 공간 체크 
 	         for(int j=0; j<NeighborAry.size(); j++)
 	         {
 	            compareSuccPointS.add(NeighborAry.get(j));
 	            
+	            
 	         }
-	         
+	         System.out.println("compareSuccPointS : "+ compareSuccPointS+"i"+i);
 	         //인접한 점과 그 점의 이웃점을 묶음으로 기존 판에 있는 점들과 비교하여 육목이 될 수 있는 지 시뮬레이션 
 	         for(int j=0; j<compareSuccPointS.size(); j++)
 	         {
@@ -191,18 +211,19 @@ public class DrawLine extends JPanel {
 	            ConnectSix.myPoint.add(compareSuccPointS.elementAt(j));
 	            ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = ConnectSix.MyColor;
 	            ConnectSix.check[compareSuccPointS.elementAt(j).x][compareSuccPointS.elementAt(j).y] = ConnectSix.MyColor;
+	            
+	            
 	            for(int l=0; l<ConnectSix.myPoint.size(); l++)
 	            {
-	               if(winloseVertical(ConnectSix.myPoint.elementAt(l).x,ConnectSix.myPoint.elementAt(l).y, 1,1,false)>=succ
-	                     || winloseHorizantal(ConnectSix.myPoint.elementAt(l).x,ConnectSix.myPoint.elementAt(l).y, 1,1,false)>=succ
-	                     || winlosePlusSlop(ConnectSix.myPoint.elementAt(l).x,ConnectSix.myPoint.elementAt(l).y,1,1,false)>=succ
-	                     || winloseMinusSlop(ConnectSix.myPoint.elementAt(l).x, ConnectSix.myPoint.elementAt(l).y,1,1,false)>=succ
+	            	
+	               if(winloseVertical(ConnectSix.myPoint.elementAt(l).x,ConnectSix.myPoint.elementAt(l).y, 1,1,false)==succ
+	                     || winloseHorizantal(ConnectSix.myPoint.elementAt(l).x,ConnectSix.myPoint.elementAt(l).y, 1,1,false)==succ
+	                     || winlosePlusSlop(ConnectSix.myPoint.elementAt(l).x,ConnectSix.myPoint.elementAt(l).y,1,1,false)==succ
+	                     || winloseMinusSlop(ConnectSix.myPoint.elementAt(l).x, ConnectSix.myPoint.elementAt(l).y,1,1,false)==succ
 	                  )
 	               {
-	                  
-	                  select[0] = new Point(compareAdjPointS.elementAt(i).x, compareAdjPointS.elementAt(i).y);
-	                   select[1] = new Point(compareSuccPointS.elementAt(j).x, compareSuccPointS.elementAt(j).y);
-	                   System.out.println("select1 : "+select[0]+" "+select[1]);
+	            	   
+	                   //System.out.println("checkNumCapa select1 : "+select[0]+" "+select[1]);
 	                   //이 위치에서는 2개가 선택되어 5개라고 판단하는데, 여기서 이 시점의 mypoint로 끝점에서 -1이 아닌 점을 만날 때까지 돌린 결과가 적어도 공백이 한개 이상이 나와야 한다.
 	                   if(winloseVertical(ConnectSix.myPoint.elementAt(l).x,ConnectSix.myPoint.elementAt(l).y, 1,1,true)>=(6-succ)
 	  	                     || winloseHorizantal(ConnectSix.myPoint.elementAt(l).x,ConnectSix.myPoint.elementAt(l).y, 1,1,true)>=(6-succ)
@@ -210,7 +231,13 @@ public class DrawLine extends JPanel {
 	  	                     || winloseMinusSlop(ConnectSix.myPoint.elementAt(l).x, ConnectSix.myPoint.elementAt(l).y,1,1,true)>=(6-succ)
 	  	                  )
 	  	               {
-	                	   
+	                	   select[0] = new Point(compareAdjPointS.elementAt(i).x, compareAdjPointS.elementAt(i).y);
+		                   select[1] = new Point(compareSuccPointS.elementAt(j).x, compareSuccPointS.elementAt(j).y);
+		                   
+		                   	ConnectSix.myPoint.pop();
+		   	            	ConnectSix.myPoint.pop();
+		   	            	ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = -1;
+		   		            ConnectSix.check[compareSuccPointS.elementAt(j).x][compareSuccPointS.elementAt(j).y] = -1;
 	                	   return;
 	  	               }
 	                }
@@ -259,6 +286,10 @@ public class DrawLine extends JPanel {
 	  	                     || winloseMinusSlop(ConnectSix.myPoint.elementAt(l).x, ConnectSix.myPoint.elementAt(l).y,1,1,true)>=1
 	  	                  )
 	  	               {
+	                	   ConnectSix.myPoint.pop();
+		   	            	ConnectSix.myPoint.pop();
+		   	            	ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = -1;
+		   		            ConnectSix.check[compareAdjPointS.elementAt(j).x][compareAdjPointS.elementAt(j).y] = -1;
 	                	   return;
 	  	               }
 	                }
@@ -278,14 +309,17 @@ public class DrawLine extends JPanel {
        //System.out.println("4 : check[0][0]"+ConnectSix.check[0][0]);
         //1 블랙리스트 각각 점 ->포인트 함수->큐a에 넣어준다.
         ArrayList<Point> NeighborAry = new ArrayList<>();
+	      Stack<Point> compareAdjPointS = new Stack<Point>();//육목이 될 연속되지 않은 빈 공간 체크 
+	      
         for(int i=0; i<ConnectSix.rivalPoint.size(); i++)
         {
            //나의 점의 이웃들을 모두 저장한다. 
            NeighborAry = getPointAry(ConnectSix.rivalPoint.elementAt(i).x, ConnectSix.rivalPoint.elementAt(i).y);
-           
+           compareAdjPointS = new Stack<Point>();
            //NeighborAry의 모든 점들을 인접점 비교 스택에 넣어준다. 
            for(int j=0; j<NeighborAry.size(); j++)
            {
+        	   
               compareAdjPointS.add(NeighborAry.get(j));
            }
         }
@@ -314,10 +348,10 @@ public class DrawLine extends JPanel {
                           || winlosePlusSlop(ConnectSix.rivalPoint.elementAt(l).x,ConnectSix.rivalPoint.elementAt(l).y,1,2,false)>=7 
                           ||winloseMinusSlop(ConnectSix.rivalPoint.elementAt(l).x,ConnectSix.rivalPoint.elementAt(l).y,1,2,false)>=7
                     ){
-                       ConnectSix.myPoint.add(ConnectSix.rivalPoint.pop());
-                       ConnectSix.myPoint.add(ConnectSix.rivalPoint.pop());
-                       ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = ConnectSix.MyColor;
-                       ConnectSix.check[compareAdjPointS.elementAt(j).x][compareAdjPointS.elementAt(j).y] =ConnectSix.MyColor;
+                       ConnectSix.rivalPoint.pop();
+                       ConnectSix.rivalPoint.pop();
+                       ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = -1;
+                       ConnectSix.check[compareAdjPointS.elementAt(j).x][compareAdjPointS.elementAt(j).y] =-1;
                         select[0] = new Point(compareAdjPointS.elementAt(i).x, compareAdjPointS.elementAt(i).y);
                         select[1] = new Point(compareAdjPointS.elementAt(j).x, compareAdjPointS.elementAt(j).y);
                         System.out.println("checkOverLose select2 : "+select[0]+" "+select[1]);
@@ -346,10 +380,10 @@ public class DrawLine extends JPanel {
                        || winlosePlusSlop(ConnectSix.rivalPoint.elementAt(l).x,ConnectSix.rivalPoint.elementAt(l).y,1,2,false)>=6 
                        ||winloseMinusSlop(ConnectSix.rivalPoint.elementAt(l).x,ConnectSix.rivalPoint.elementAt(l).y,1,2,false)>=6
                  ){
-                    ConnectSix.myPoint.add(ConnectSix.rivalPoint.pop());
-                    ConnectSix.myPoint.add(ConnectSix.rivalPoint.pop());
-                    ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = ConnectSix.MyColor;
-                    ConnectSix.check[compareAdjPointS.elementAt(j).x][compareAdjPointS.elementAt(j).y] =ConnectSix.MyColor;
+                    ConnectSix.rivalPoint.pop();
+                    ConnectSix.rivalPoint.pop();
+                    ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = -1;
+                    ConnectSix.check[compareAdjPointS.elementAt(j).x][compareAdjPointS.elementAt(j).y] =-1;
                      select[0] = new Point(compareAdjPointS.elementAt(i).x, compareAdjPointS.elementAt(i).y);
                      select[1] = new Point(compareAdjPointS.elementAt(j).x, compareAdjPointS.elementAt(j).y);
                      System.out.println("checkOverLose select2 : "+select[0]+" "+select[1]);
@@ -374,11 +408,12 @@ public class DrawLine extends JPanel {
          
          //4 임의의 큐b를 통헤 승리 조건을 판별한다.
          //5 만약 승리 조건이면 for문을 멈추고 묶음을 반환한다. 또는 어떠한 변수에 저장한다. 
+   Stack<Point> compareSuccPointS = new Stack<Point>(); //육목이 될 연속된 빈 공간 체크 
    //인접한 점 집합
    for(int i=0; i<compareAdjPointS.size(); i++)
    {
       NeighborAry = new ArrayList<>();
-      
+      compareSuccPointS = new Stack<Point>(); //육목이 될 연속된 빈 공간 체크 
       //인접한 점 각각의 이웃점 집합 만들기 
       NeighborAry = getPointAry(compareAdjPointS.elementAt(i).x, compareAdjPointS.elementAt(i).y);
 
@@ -404,13 +439,14 @@ public class DrawLine extends JPanel {
                   || winloseMinusSlop(ConnectSix.rivalPoint.elementAt(l).x, ConnectSix.rivalPoint.elementAt(l).y,1,2,false)>=6
                )
             {
-               ConnectSix.myPoint.add(ConnectSix.rivalPoint.pop());
-               ConnectSix.myPoint.add(ConnectSix.rivalPoint.pop());
-               ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = ConnectSix.MyColor;
-               ConnectSix.check[compareSuccPointS.elementAt(j).x][compareSuccPointS.elementAt(j).y] =ConnectSix.MyColor;
+            	
+              ConnectSix.rivalPoint.pop();
+              ConnectSix.rivalPoint.pop();
+               ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = -1;
+               ConnectSix.check[compareSuccPointS.elementAt(j).x][compareSuccPointS.elementAt(j).y] =-1;
                select[0] = new Point(compareAdjPointS.elementAt(i).x, compareAdjPointS.elementAt(i).y);
                select[1] = new Point(compareSuccPointS.elementAt(j).x, compareSuccPointS.elementAt(j).y);
-               System.out.println("select1 : "+select[0]+" "+select[1]);
+               System.out.println("checkOverLose select1 : "+select[0]+" "+select[1]);
                return;
              }
          }
@@ -548,6 +584,7 @@ public class DrawLine extends JPanel {
       
       int right=winloseAntiCross(row,column, 0,color,1,checkBest);
       int left=winloseAntiCross(row, column,0,color,-1,checkBest);
+      //System.out.println("row "+row+" column "+column+" return "+(right+left+1));
       return right+left+1;
    }
    public int winloseMinusSlop(int row, int column, int count, int color,boolean checkBest) {
@@ -738,11 +775,12 @@ public class DrawLine extends JPanel {
       //System.out.println("checkOverWin: check[][]"+ConnectSix.check[0][0]);
       //1 블랙리스트 각각 점 ->포인트 함수->큐a에 넣어준다.
       ArrayList<Point> NeighborAry = new ArrayList<>();
+      Stack<Point> compareAdjPointS = new Stack<Point>();//육목이 될 연속되지 않은 빈 공간 체크 
       for(int i=0; i<ConnectSix.myPoint.size(); i++)
       {
          //나의 점의 이웃들을 모두 저장한다. 
          NeighborAry = getPointAry(ConnectSix.myPoint.elementAt(i).x, ConnectSix.myPoint.elementAt(i).y);
-         
+         compareAdjPointS = new Stack<Point>();
          //NeighborAry의 모든 점들을 인접점 비교 스택에 넣어준다. 
          for(int j=0; j<NeighborAry.size(); j++)
          {
@@ -758,11 +796,12 @@ public class DrawLine extends JPanel {
             
             //4 임의의 큐b를 통헤 승리 조건을 판별한다.
             //5 만약 승리 조건이면 for문을 멈추고 묶음을 반환한다. 또는 어떠한 변수에 저장한다. 
+      Stack<Point> compareSuccPointS = new Stack<Point>(); //육목이 될 연속된 빈 공간 체크 
       //인접한 점 집합
       for(int i=0; i<compareAdjPointS.size(); i++)
       {
          NeighborAry = new ArrayList<>();
-         
+         compareSuccPointS = new Stack<Point>(); //육목이 될 연속된 빈 공간 체크 
          //인접한 점 각각의 이웃점 집합 만들기 
          NeighborAry = getPointAry(compareAdjPointS.elementAt(i).x, compareAdjPointS.elementAt(i).y);
 
@@ -788,6 +827,10 @@ public class DrawLine extends JPanel {
                   )
                {
                    
+            	   ConnectSix.myPoint.pop();
+                   ConnectSix.myPoint.pop();
+                   ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = -1;
+                   ConnectSix.check[compareSuccPointS.elementAt(j).x][compareSuccPointS.elementAt(j).y] = -1;
                   select[0] = new Point(compareAdjPointS.elementAt(i).x, compareAdjPointS.elementAt(i).y);
                    select[1] = new Point(compareSuccPointS.elementAt(j).x, compareSuccPointS.elementAt(j).y);
                    System.out.println("checkOverWin select1  : "+select[0]+" "+select[1]);
@@ -828,6 +871,10 @@ public class DrawLine extends JPanel {
                      || winlosePlusSlop(ConnectSix.myPoint.elementAt(l).x,ConnectSix.myPoint.elementAt(l).y,1,1,false)>=6 
                      ||winloseMinusSlop(ConnectSix.myPoint.elementAt(l).x,ConnectSix.myPoint.elementAt(l).y,1,1,false)>=6
                ){
+            	   ConnectSix.myPoint.pop();
+                   ConnectSix.myPoint.pop();
+                   ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = -1;
+                   ConnectSix.check[compareAdjPointS.elementAt(j).x][compareAdjPointS.elementAt(j).y] = -1;
                    select[0] = new Point(compareAdjPointS.elementAt(i).x, compareAdjPointS.elementAt(i).y);
                    select[1] = new Point(compareAdjPointS.elementAt(j).x, compareAdjPointS.elementAt(j).y);
                    System.out.println("checkOverWin select2 : "+select[0]+" "+select[1]);

@@ -119,6 +119,11 @@ public class ConnectSix extends JFrame {
        		 	MyColor=-1;
        		 	myPoint.removeAllElements();
        		 	rivalPoint.removeAllElements();
+       		 	for(int i=0; i<19; i++) { 
+       	        	for(int j=0; j<19; j++) {
+       	        		ConnectSix.check[i][j] =-1 ;
+       	        	}
+       	        }
        		 	draw.repaint();
             }
         });
