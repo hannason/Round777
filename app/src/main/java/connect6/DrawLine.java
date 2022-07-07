@@ -36,6 +36,7 @@ public class DrawLine extends JPanel {
 	Stack<Point> compareAdjPointS = new Stack<Point>();//육목이 될 연속되지 않은 빈 공간 체크 
 	Stack<Point> compareSuccPointS = new Stack<Point>(); //육목이 될 연속된 빈 공간 체크 
 	static Point[] select = new Point[2]; //시뮬레이션 결과 선택된 돌의 위치 포인트
+	int flag = 1;
 	
 	@Override
     public void paintComponent(Graphics var){
@@ -75,14 +76,16 @@ public class DrawLine extends JPanel {
         
         //게임 시작 
         if(ConnectSix.start) {//beforeEdit();
-        	ConnectSix.myPoint.add(new Point(8,9));
-        	ConnectSix.check[8][9]=ConnectSix.MyColor;
-          ConnectSix.myPoint.add(new Point(10,9));
-          ConnectSix.check[10][9]=ConnectSix.MyColor;
-//          ConnectSix.myPoint.add(new Point(11,9));
-//          ConnectSix.check[11][9]=ConnectSix.MyColor;
-         ConnectSix.myPoint.add(new Point(12,9));
-         ConnectSix.check[12][9]=ConnectSix.MyColor;
+        	ConnectSix.rivalPoint.add(new Point(8,7));
+        	ConnectSix.check[8][7]=ConnectSix.RivalColor;
+        	ConnectSix.rivalPoint.add(new Point(9,7));
+        	ConnectSix.check[9][7]=ConnectSix.RivalColor;
+        	ConnectSix.rivalPoint.add(new Point(10,7));
+        	ConnectSix.check[10][7]=ConnectSix.RivalColor;
+        	ConnectSix.rivalPoint.add(new Point(11,7));
+        	ConnectSix.check[11][7]=ConnectSix.RivalColor;
+        	ConnectSix.rivalPoint.add(new Point(12,7));
+        	ConnectSix.check[12][7]=ConnectSix.RivalColor;
 //          ConnectSix.check[11][9]=ConnectSix.MyColor;
 //          ConnectSix.myPoint.add(new Point(13,9));
 //          ConnectSix.check[13][9]=ConnectSix.MyColor;
@@ -122,9 +125,154 @@ public class DrawLine extends JPanel {
         ConnectSix.press=false;
     }
 	
-private void checkOverLose() {
+	private void checkOverLose() {
 		// TODO Auto-generated method stub
-		
+		 System.out.println("4 : check[0][0]"+ConnectSix.check[0][0]);
+	     //1 블랙리스트 각각 점 ->포인트 함수->큐a에 넣어준다.
+	     ArrayList<Point> NeighborAry = new ArrayList<>();
+	     for(int i=0; i<ConnectSix.rivalPoint.size(); i++)
+	     {
+	        //나의 점의 이웃들을 모두 저장한다. 
+	        NeighborAry = getPointAry(ConnectSix.rivalPoint.elementAt(i).x, ConnectSix.rivalPoint.elementAt(i).y);
+	        
+	        //NeighborAry의 모든 점들을 인접점 비교 스택에 넣어준다. 
+	        for(int j=0; j<NeighborAry.size(); j++)
+	        {
+	           compareAdjPointS.add(NeighborAry.get(j));
+	        }
+	     }
+	  
+	     
+	     //for 문 (빈칸 1개를 위한 for문 , 0x0000)
+	        //2 큐a의 첫번째 포인트와  큐a의 다른 포인트와 묶음을 만든다.
+	        
+	        //3 임의의 큐b를 만든다.(시뮬레이션을 위한...blacklist에서 2번의 점을 넣어서 만든 큐b)
+	        
+	        //4 임의의 큐b를 통헤 승리 조건을 판별한다.
+	  
+	        //5 만약 승리 조건이면 for문을 멈추고 묶음을 반환한다. 또는 어떠한 변수에 저장한다. 
+	     for(int i=0; i<compareAdjPointS.size(); i++)
+	     {
+	        for(int j=i+1; j<compareAdjPointS.size(); j++)
+	        {
+	           ConnectSix.rivalPoint.add(compareAdjPointS.elementAt(i));
+	           ConnectSix.rivalPoint.add(compareAdjPointS.elementAt(j));
+	           ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = ConnectSix.RivalColor;
+	           ConnectSix.check[compareAdjPointS.elementAt(j).x][compareAdjPointS.elementAt(j).y] = ConnectSix.RivalColor;
+	           for(int l=0; l<ConnectSix.rivalPoint.size(); l++)
+	           {
+	        	   if(winloseVertical(ConnectSix.rivalPoint.elementAt(l).x,ConnectSix.rivalPoint.elementAt(l).y, 1,2)>=7
+		                    || winloseHorizantal(ConnectSix.rivalPoint.elementAt(l).x,ConnectSix.rivalPoint.elementAt(l).y, 1,2)>=7 
+		                    || winlosePlusSlop(ConnectSix.rivalPoint.elementAt(l).x,ConnectSix.rivalPoint.elementAt(l).y,1,2)>=7 
+		                    ||winloseMinusSlop(ConnectSix.rivalPoint.elementAt(l).x,ConnectSix.rivalPoint.elementAt(l).y,1,2)>=7
+		              ){
+		                 ConnectSix.myPoint.add(ConnectSix.rivalPoint.pop());
+		                 ConnectSix.myPoint.add(ConnectSix.rivalPoint.pop());
+		                 ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = ConnectSix.MyColor;
+		                 ConnectSix.check[compareAdjPointS.elementAt(j).x][compareAdjPointS.elementAt(j).y] =ConnectSix.MyColor;
+		                  select[0] = new Point(compareAdjPointS.elementAt(i).x, compareAdjPointS.elementAt(i).y);
+		                  select[1] = new Point(compareAdjPointS.elementAt(j).x, compareAdjPointS.elementAt(j).y);
+		                  System.out.println("select2 : "+select[0]+" "+select[1]);
+		                  return;
+		               }
+	           }
+	           ConnectSix.rivalPoint.pop();
+	           ConnectSix.rivalPoint.pop();
+	           ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = -1;
+	           ConnectSix.check[compareAdjPointS.elementAt(j).x][compareAdjPointS.elementAt(j).y] = -1;
+	        }
+	     }
+	     for(int i=0; i<compareAdjPointS.size(); i++)
+	     {
+	        for(int j=i+1; j<compareAdjPointS.size(); j++)
+	        {
+	           ConnectSix.rivalPoint.add(compareAdjPointS.elementAt(i));
+	           ConnectSix.rivalPoint.add(compareAdjPointS.elementAt(j));
+	           ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = ConnectSix.RivalColor;
+	           ConnectSix.check[compareAdjPointS.elementAt(j).x][compareAdjPointS.elementAt(j).y] = ConnectSix.RivalColor;
+	           for(int l=0; l<ConnectSix.rivalPoint.size(); l++)
+	           {
+	        	  
+	              if(winloseVertical(ConnectSix.rivalPoint.elementAt(l).x,ConnectSix.rivalPoint.elementAt(l).y, 1,2)>=6 
+	                    || winloseHorizantal(ConnectSix.rivalPoint.elementAt(l).x,ConnectSix.rivalPoint.elementAt(l).y, 1,2)>=6 
+	                    || winlosePlusSlop(ConnectSix.rivalPoint.elementAt(l).x,ConnectSix.rivalPoint.elementAt(l).y,1,2)>=6 
+	                    ||winloseMinusSlop(ConnectSix.rivalPoint.elementAt(l).x,ConnectSix.rivalPoint.elementAt(l).y,1,2)>=6
+	              ){
+	                 ConnectSix.myPoint.add(ConnectSix.rivalPoint.pop());
+	                 ConnectSix.myPoint.add(ConnectSix.rivalPoint.pop());
+	                 ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = ConnectSix.MyColor;
+	                 ConnectSix.check[compareAdjPointS.elementAt(j).x][compareAdjPointS.elementAt(j).y] =ConnectSix.MyColor;
+	                  select[0] = new Point(compareAdjPointS.elementAt(i).x, compareAdjPointS.elementAt(i).y);
+	                  select[1] = new Point(compareAdjPointS.elementAt(j).x, compareAdjPointS.elementAt(j).y);
+	                  System.out.println("select2 : "+select[0]+" "+select[1]);
+	                  return;
+	               }
+	           }
+	           ConnectSix.rivalPoint.pop();
+	           ConnectSix.rivalPoint.pop();
+	           ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = -1;
+	           ConnectSix.check[compareAdjPointS.elementAt(j).x][compareAdjPointS.elementAt(j).y] = -1;
+	        }
+	     }
+	     
+	     System.out.println("6 : check[0][0]"+ConnectSix.check[0][0]);
+
+	     
+	   //for 문 (빈칸 2개를 위한 for문  , 00xx00) 
+         //2 큐a의 첫번째 포인트와  이 포인트를 포인트 함수에 넣어서 큐c를 만든다.
+         //3 큐a의 포인트와 큐c의 첫번째 포인트와 묶음을 만든다 .
+         
+         //4 임의의 큐b를 만든다.(시뮬레이션을 위한…blacklist에서 3번의 점을 넣어서 만든 큐b)
+         
+         //4 임의의 큐b를 통헤 승리 조건을 판별한다.
+         //5 만약 승리 조건이면 for문을 멈추고 묶음을 반환한다. 또는 어떠한 변수에 저장한다. 
+   //인접한 점 집합
+   for(int i=0; i<compareAdjPointS.size(); i++)
+   {
+      NeighborAry = new ArrayList<>();
+      
+      //인접한 점 각각의 이웃점 집합 만들기 
+      NeighborAry = getPointAry(compareAdjPointS.elementAt(i).x, compareAdjPointS.elementAt(i).y);
+
+      for(int j=0; j<NeighborAry.size(); j++)
+      {
+         compareSuccPointS.add(NeighborAry.get(j));
+         
+      }
+      
+      //인접한 점과 그 점의 이웃점을 묶음으로 기존 판에 있는 점들과 비교하여 육목이 될 수 있는 지 시뮬레이션 
+      for(int j=0; j<compareSuccPointS.size(); j++)
+      {
+         ConnectSix.rivalPoint.add(compareAdjPointS.elementAt(i));
+         ConnectSix.rivalPoint.add(compareSuccPointS.elementAt(j));
+         ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = ConnectSix.RivalColor;
+         ConnectSix.check[compareSuccPointS.elementAt(j).x][compareSuccPointS.elementAt(j).y] = ConnectSix.RivalColor;
+         
+         for(int l=0; l<ConnectSix.rivalPoint.size(); l++)
+         {
+            if(winloseVertical(ConnectSix.rivalPoint.elementAt(l).x,ConnectSix.rivalPoint.elementAt(l).y, 1,2)>=6 
+                  || winloseHorizantal(ConnectSix.rivalPoint.elementAt(l).x,ConnectSix.rivalPoint.elementAt(l).y, 1,2)>=6
+                  || winlosePlusSlop(ConnectSix.rivalPoint.elementAt(l).x,ConnectSix.rivalPoint.elementAt(l).y,1,2)>=6 
+                  || winloseMinusSlop(ConnectSix.rivalPoint.elementAt(l).x, ConnectSix.rivalPoint.elementAt(l).y,1,2)>=6
+               )
+            {
+               ConnectSix.myPoint.add(ConnectSix.rivalPoint.pop());
+               ConnectSix.myPoint.add(ConnectSix.rivalPoint.pop());
+               ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = ConnectSix.MyColor;
+               ConnectSix.check[compareSuccPointS.elementAt(j).x][compareSuccPointS.elementAt(j).y] =ConnectSix.MyColor;
+               select[0] = new Point(compareAdjPointS.elementAt(i).x, compareAdjPointS.elementAt(i).y);
+               select[1] = new Point(compareSuccPointS.elementAt(j).x, compareSuccPointS.elementAt(j).y);
+               System.out.println("select1 : "+select[0]+" "+select[1]);
+               return;
+             }
+         }
+         ConnectSix.rivalPoint.pop();
+         ConnectSix.rivalPoint.pop();
+         ConnectSix.check[compareAdjPointS.elementAt(i).x][compareAdjPointS.elementAt(i).y] = -1;
+         ConnectSix.check[compareSuccPointS.elementAt(j).x][compareSuccPointS.elementAt(j).y] = -1;
+      }
+   }
+   System.out.println("5 : check[0][0]"+ConnectSix.check[0][0]);
 	}
 
 /*
@@ -251,7 +399,10 @@ private void checkOverLose() {
             		var2d.fillOval(i*740/18+30-15, j*740/18+30-15, 30, 30);
             		
     			}
-    			System.out.print(ConnectSix.check[i][j]+"  ");
+    			if(ConnectSix.check[j][i]<0)
+    				System.out.print("*"+"  ");
+    			else
+    				System.out.print(ConnectSix.check[j][i]+"  ");
     		}
     		System.out.println("");
     	}
